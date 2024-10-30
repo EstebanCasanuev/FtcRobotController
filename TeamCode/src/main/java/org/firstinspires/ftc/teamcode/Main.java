@@ -1,43 +1,62 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.OdometrySubsystem;
+import com.arcrobotics.ftclib.command.button.Trigger;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "Tutorial")
+import org.firstinspires.ftc.teamcode.Commands.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.DrivetrainSubsystem;
+
+@TeleOp(name = "Teleop")
 public class Main extends OpMode{
 
-    DcMotor frontRightMotor;
-    DcMotor rearRightMotor;
-    DcMotor frontLeftMotor;
-    DcMotor rearLeftMotor;
+    /*public static final double TRACKWIDTH = 14.7; // The lateral distance between the left and right odometers
+    public static final double CENTER_WHEEL_OFFSET = -2.1;
+    public static final double WHEEL_DIAMETER = 1.377;
+    public static final double TICKS_PER_REV = 2000;
+    public static final double DISTANCE_PER_PULSE = Math.PI * WHEEL_DIAMETER / TICKS_PER_REV;
+
+    private Motor.Encoder leftOdometer, rightOdometer, centerOdometer;
+
+    HolonomicOdometry m_robotOdometry = new HolonomicOdometry(
+            leftOdometer, rightOdometer, centerOdometer, TRACKWIDTH,
+            CENTER_WHEEL_OFFSET
+    );
+
+    // pass the odometry object into the subsystem constructor
+    OdometrySubsystem m_odometry;*/
+
+
+    DrivetrainSubsystem m_drive;
+    Drive DrivetrainCommand;
+
+    Trigger Gamepad2_b = new Trigger();
+
     @Override
     public void init() {
-        frontRightMotor.hardwareMap.get(DcMotor.class, "frontRightMotor");
-        rearRightMotor.hardwareMap.get(DcMotor.class, "rearRightMotor");
-        frontLeftMotor.hardwareMap.get(DcMotor.class, "frontLeftMotor");
-        rearLeftMotor.hardwareMap.get(DcMotor.class, "rearLeftMotor");
+        m_drive = new DrivetrainSubsystem();
+        DrivetrainCommand = new Drive(m_drive,
+                () -> gamepad1.left_stick_x,
+                () -> gamepad1.right_trigger - gamepad1.left_trigger,
+                () ->gamepad1.right_stick_x);
+
+        m_odometry = new OdometrySubsystem(m_robotOdometry);
+
+        CommandScheduler.getInstance().setDefaultCommand(m_drive, DrivetrainCommand);
+
+        Gamepad2_b.toggleWhenActive();
+
 
     }
 
     @Override
     public void loop() {
-        
-        drive_Cartesian(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        CommandScheduler.getInstance().run();
 
-    }
-
-    public void drive_Cartesian(double X, double Y, double Z){
-
-        double frontLeftPower = Y + X + Z;
-        double rearLeftPower = Y - X + Z;
-        double frontRightPower = Y - X - Z;
-        double rearRightPower = Y + X - Z;
-
-        frontRightMotor.setPower(frontRightPower);
-        rearRightMotor.setPower(rearRightPower);
-        frontLeftMotor.setPower(frontLeftPower);
-        rearLeftMotor.setPower(rearLeftPower);
-        
     }
 }
