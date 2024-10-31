@@ -1,9 +1,15 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.OdometrySubsystem;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
+import com.arcrobotics.ftclib.kinematics.Odometry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -14,12 +20,40 @@ public class DrivetrainSubsystem extends SubsystemBase {
     Motor rearLeftMotor;
 
     MecanumDrive m_Drive;
+
+    public static final double TRACKWIDTH = 14.7; // The lateral distance between the left and right odometers
+    public static final double CENTER_WHEEL_OFFSET = -2.1;
+    public static final double WHEEL_DIAMETER = 1.377;
+    public static final double TICKS_PER_REV = 2000;
+    public static final double DISTANCE_PER_PULSE = Math.PI * WHEEL_DIAMETER / TICKS_PER_REV;
+
+    private Motor.Encoder leftOdometer, rightOdometer, centerOdometer;
+
+    HolonomicOdometry m_robotOdometry = new HolonomicOdometry(
+            ()->leftOdometer.getDistance(),
+            ()->rightOdometer.getDistance(),
+            ()->centerOdometer.getDistance(),
+            TRACKWIDTH, CENTER_WHEEL_OFFSET
+    );
+
+    OdometrySubsystem Odometry = new OdometrySubsystem(m_robotOdometry);
+
+
+
+    // pass the odometry object into the subsystem constructor
     public DrivetrainSubsystem(){
+
+        leftOdometer = frontLeftMotor.encoder;
+        rightOdometer = frontRightMotor.encoder;
+
+
         m_Drive = new MecanumDrive(frontLeftMotor,frontRightMotor, rearLeftMotor, rearRightMotor);
-        frontRightMotor.hardwareMap.get(DcMotor.class, "frontRightMotor");
-        rearRightMotor.hardwareMap.get(DcMotor.class, "rearRightMotor");
-        frontLeftMotor.hardwareMap.get(DcMotor.class, "frontLeftMotor");
-        rearLeftMotor.hardwareMap.get(DcMotor.class, "rearLeftMotor");
+        frontRightMotor = new Motor(hardwareMap, "frontRightMotor");
+        rearRightMotor = new Motor(hardwareMap, "rearRightMotor");
+        frontLeftMotor = new Motor(hardwareMap, "frontLeftMotor");
+        rearLeftMotor = new Motor(hardwareMap, "rearLeftMotor");
+
+
 
     }
 
@@ -33,8 +67,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         super.periodic();
     }
 
-    public static void drive(Double Xspeed, Double Yspeed, Double Zspeed){
+    public Pose2d Coordenates() {
+        return Odometry.getPose();
+    }
 
+    public static void drive(Double Xspeed, Double Yspeed, Double Zspeed){
         m_Drive.driveRobotCentric(Xspeed, Yspeed, Zspeed);
     }
 }

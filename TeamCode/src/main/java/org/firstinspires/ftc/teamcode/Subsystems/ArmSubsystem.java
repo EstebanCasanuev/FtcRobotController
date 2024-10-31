@@ -3,12 +3,16 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Constants;
+
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -31,5 +35,9 @@ public class ArmSubsystem extends SubsystemBase {
     public void periodic() {
         Motor.setPower(PID.calculate(Encoder.getPosition()));
         super.periodic();
+    }
+
+    public Command setSetpoint(IntSupplier Setpoint){
+        PID.setSetPoint(Setpoint.getAsInt());
     }
 }
