@@ -35,7 +35,6 @@ public class Main extends OpMode{
     DrivetrainSubsystem m_drive;
     Drive DrivetrainCommand;
 
-    Trigger Gamepad2_b = new Trigger();
 
     @Override
     public void init() {
@@ -45,11 +44,11 @@ public class Main extends OpMode{
                 () -> gamepad1.right_trigger - gamepad1.left_trigger,
                 () ->gamepad1.right_stick_x);
 
-        m_odometry = new OdometrySubsystem(m_robotOdometry);
+        //m_odometry = new OdometrySubsystem(m_robotOdometry);
 
         CommandScheduler.getInstance().setDefaultCommand(m_drive, DrivetrainCommand);
 
-        Gamepad2_b.toggleWhenActive();
+
 
 
     }
