@@ -45,7 +45,7 @@ public class Main extends OpMode{
 
 
 
-        Gamepad2_b.toggleWhenActive(Arm.setSetpoint(() -> Constants.ArmSetpoints.Deposit));
+        Gamepad2_b.toggleWhenActive(Arm.set_Setpoint(() -> Constants.ArmSetpoints.Deposit));
 
 
     }

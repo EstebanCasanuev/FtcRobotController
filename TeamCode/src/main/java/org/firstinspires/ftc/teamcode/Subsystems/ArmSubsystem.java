@@ -37,7 +37,7 @@ public class ArmSubsystem extends SubsystemBase {
         super.periodic();
     }
 
-    public Command setSetpoint(IntSupplier Setpoint){
+    public Command set_Setpoint(IntSupplier Setpoint){
         PID.setSetPoint(Setpoint.getAsInt());
     }
 }
